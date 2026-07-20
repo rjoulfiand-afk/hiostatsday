@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pemasukan - HIO STATSDAY</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --text-dark: #0f172a;
+            --text-soft: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --accent-1: #a1c4fd; 
+            --accent-2: #c2e9fb; 
+            --success: #10b981;
+            --danger: #ff4757;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 40px 20px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+        .blob { position: fixed; filter: blur(80px); z-index: -1; opacity: 0.6; border-radius: 50%; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #e0c3fc; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #8ec5fc; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        /* Container Fintech Premium */
+        .app-container {
+            width: 100%; max-width: 700px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px; padding: 45px 35px;
+            box-shadow: 0 30px 60px rgba(162, 171, 189, 0.3), inset 0 0 0 1px rgba(255,255,255,0.9);
+            position: relative;
+        }
+
+        .header { text-align: center; margin-bottom: 35px; position: relative; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; letter-spacing: 0.5px;}
+        .header p { font-size: 13px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px;}
+        
+        .btn-action {
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            background: #fff; width: 42px; height: 42px; border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-dark); cursor: pointer; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            text-decoration: none; transition: var(--transition); font-size: 16px;
+        }
+        .btn-action:hover { background: var(--accent-1); color: #fff; transform: translateY(-50%) scale(1.08); }
+
+        /* VIEWS CONTROL */
+        .view { display: none; animation: smoothFadeUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+        .view.active { display: block; }
+        @keyframes smoothFadeUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* ================= 1. VIEW: PILIH DIVISI ================= */
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .role-card {
+            background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.9); border-radius: 20px;
+            padding: 16px 22px; display: flex; align-items: center; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+        .role-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 30px rgba(161, 196, 253, 0.3); background: #fff;}
+        .role-icon { 
+            width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); 
+            color: #fff; border-radius: 14px; display: flex; justify-content: center; align-items: center; 
+            font-size: 18px; margin-right: 18px; box-shadow: 0 8px 15px rgba(161, 196, 253, 0.4);
+        }
+        .role-text { font-weight: 800; font-size: 15px; flex: 1; color: var(--text-dark); letter-spacing: 0.5px;}
+
+        /* ================= 2. VIEW: LOGIN FORM ================= */
+        .input-group { margin-bottom: 20px; text-align: left; position: relative; }
+        .input-group i.icon-left { 
+            position: absolute; left: 18px; top: 50%; transform: translateY(-50%); 
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 16px; transition: var(--transition); z-index: 2;
+        }
+        .form-control { 
+            width: 100%; background: rgba(255,255,255,0.6); border: 2px solid rgba(255,255,255,0.9); 
+            border-radius: 18px; padding: 16px 15px 16px 50px; font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-size: 14px; font-weight: 600; outline: none; transition: var(--transition); color: var(--text-dark);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .form-control::placeholder { color: #94a3b8; font-weight: 500; }
+        .form-control:focus { 
+            background: #fff; border-color: transparent; 
+            box-shadow: 0 0 0 4px rgba(161, 196, 253, 0.25), 0 10px 20px rgba(161, 196, 253, 0.15);
+            transform: translateY(-2px);
+        }
+        .form-control:focus + i.icon-left { transform: translateY(-50%) scale(1.15); }
+
+        /* Tombol Submit Kasta Sultan */
+        .btn-submit {
+            width: 100%; margin-top: 10px; padding: 18px;
+            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            color: #0f172a; border: none; border-radius: 20px;
+            font-size: 14px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;
+            text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: var(--transition);
+            box-shadow: 0 15px 30px rgba(161, 196, 253, 0.4), inset 0 2px 0 rgba(255,255,255,0.6);
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        .btn-submit::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transition: all 0.6s ease;
+        }
+        .btn-submit:hover::after { left: 100%; }
+        .btn-submit:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(161, 196, 253, 0.6); }
+        .btn-submit:active { transform: translateY(1px); box-shadow: 0 5px 15px rgba(161, 196, 253, 0.4); }
+
+        /* ================= 3. VIEW: WORKER DASHBOARD ================= */
+        .dashboard-user { 
+            font-size: 12px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); 
+            margin: 0 auto 25px; text-align: center; text-transform: uppercase; letter-spacing: 1.5px;
+            padding: 8px 20px; border-radius: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(161, 196, 253, 0.4);
+            position: relative; left: 50%; transform: translateX(-50%);
+        }
+        
+        /* Grid Form Data Transaksi */
+        .form-row { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 15px; margin-bottom: 20px; }
+        
+        .table-container { 
+            margin-top: 30px; background: rgba(255,255,255,0.4); border-radius: 24px; 
+            padding: 15px; max-height: 380px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.6);
+        }
+        
+        /* Kartu Struk Transaksi Digital */
+        .t-card {
+            background: #ffffff; border-radius: 18px; padding: 18px 20px; margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); transition: var(--transition);
+            position: relative;
+        }
+        .t-card::before {
+            content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 4px;
+            background: linear-gradient(to bottom, var(--accent-1), var(--accent-2));
+            border-radius: 0 5px 5px 0;
+        }
+        .t-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 10px 25px rgba(161, 196, 253, 0.25); }
+        
+        .t-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .t-cust { font-weight: 800; font-size: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 8px;}
+        .t-cust i { color: var(--accent-1); }
+        
+        .t-pay { 
+            font-weight: 800; font-size: 15px; color: var(--success); 
+            background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.1);
+        }
+        
+        .t-card-mid { font-size: 13px; color: var(--text-soft); font-weight: 600; margin-bottom: 15px; line-height: 1.5; }
+        
+        .t-card-bot { display: flex; justify-content: space-between; align-items: center; border-top: 2px dashed #e2e8f0; padding-top: 15px; }
+        .t-time { font-size: 11px; color: #94a3b8; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        
+        /* Tombol Hapus Aesthetic (Danger Glow) */
+        .btn-delete { 
+            background: rgba(255, 71, 87, 0.1); color: var(--danger); border: none; border-radius: 10px; 
+            padding: 8px 14px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .btn-delete:hover { background: var(--danger); color: #fff; box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3); transform: scale(1.05); }
+
+        .empty-state { text-align: center; padding: 30px 20px; font-size: 13px; color: var(--text-soft); font-weight: 600; }
+
+        /* ================= 4. VIEW: OWNER DASHBOARD ================= */
+        .owner-section-title { 
+            font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #ff9a9e, #fecfef); 
+            color: #fff; padding: 8px 18px; border-radius: 15px; margin: 25px 0 15px; 
+            display: inline-block; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        /* 📱 OPTIMASI HP (RESPONSIVE) 📱 */
+        @media screen and (max-width: 600px) {
+            .app-container { padding: 45px 25px; border-radius: 35px; }
+            .form-row { grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+            .t-card-top { flex-direction: column; align-items: flex-start; gap: 8px; } 
+            .header h1 { font-size: 26px; }
+            .btn-action { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 20px; }
+            .dashboard-user { width: 100%; white-space: normal; line-height: 1.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="app-container">
+        
+        <!-- ======================= VIEW 1: MENU DIVISI ======================= -->
+        <div id="view-menu" class="view">
+            <div class="header">
+                <a href="hio.html" class="btn-action"><i class="fas fa-arrow-left"></i></a>
+                <h1>Sistem Pemasukan</h1>
+                <p>Silakan pilih divisi operasional</p>
+            </div>
+            <div class="menu-grid">
+                <div class="role-card" onclick="openLogin('Owner')"><div class="role-icon"><i class="fas fa-crown"></i></div><div class="role-text">Owner</div></div>
+                <div class="role-card" onclick="openLogin('Manager')"><div class="role-icon"><i class="fas fa-user-tie"></i></div><div class="role-text">Manager</div></div>
+                <div class="role-card" onclick="openLogin('ELV')"><div class="role-icon"><i class="fas fa-bolt"></i></div><div class="role-text">Divisi ELV</div></div>
+                <div class="role-card" onclick="openLogin('Staff')"><div class="role-icon"><i class="fas fa-users"></i></div><div class="role-text">Staff Divisi</div></div>
+                <div class="role-card" onclick="openLogin('Admin')"><div class="role-icon"><i class="fas fa-laptop-code"></i></div><div class="role-text">Admin System</div></div>
+            </div>
+        </div>
+
+        <!-- ======================= VIEW 2: LOGIN FORM ======================= -->
+        <div id="view-login" class="view">
+            <div class="header">
+                <button class="btn-action" onclick="showView('view-menu')"><i class="fas fa-arrow-left"></i></button>
+                <h1 id="login-title">Login</h1>
+                <p>Otorisasi Kredensial Khusus</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user icon-left"></i>
+                    <input type="text" id="logUser" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock icon-left"></i>
+                    <input type="password" id="logPass" class="form-control" placeholder="Password" required>
+                </div>
+                <p id="login-error" style="color: var(--danger); font-size: 12px; text-align: center; display: none; margin-bottom: 15px; font-weight: 700;">Username / Password Tidak Valid!</p>
+                <button type="submit" class="btn-submit"><i class="fas fa-sign-in-alt"></i> Akses Database</button>
+            </form>
+        </div>
+
+        <!-- ======================= VIEW 3: WORKER DASHBOARD ======================= -->
+        <div id="view-worker" class="view">
+            <div class="header">
+                <button class="btn-action" onclick="logout()"><i class="fas fa-power-off"></i></button>
+                <h1>Setoran Kas</h1>
+                <p>Log Transaksi Real-Time</p>
+            </div>
+            <div class="dashboard-user" id="worker-name">Welcome, Username</div>
+
+            <form id="inputDataForm">
+                <div class="form-row">
+                    <div class="input-group" style="margin-bottom:0;">
+                        <i class="fas fa-at icon-left"></i>
+                        <input type="text" id="inCust" class="form-control" placeholder="@customer" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <i class="fas fa-shopping-bag icon-left"></i>
+                        <input type="text" id="inOrder" class="form-control" placeholder="Detail Order" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <i class="fas fa-wallet icon-left"></i>
+                        <input type="text" id="inPay" class="form-control" placeholder="Nominal (Cth: 50k)" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" style="padding: 14px; font-size: 13px;"><i class="fas fa-plus-circle"></i> Tambah Data Setoran</button>
+            </form>
+
+            <div class="table-container" id="worker-table-body">
+                <!-- Data Kartu masuk kesini -->
+            </div>
+
+            <button onclick="sendToOwner()" class="btn-submit" style="margin-top: 20px; background: linear-gradient(135deg, #10b981, #34d399); color: #fff; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
+                <i class="fab fa-telegram-plane"></i> Kirim Laporan ke Owner
+            </button>
+        </div>
+
+        <!-- ======================= VIEW 4: OWNER DASHBOARD ======================= -->
+        <div id="view-owner" class="view">
+            <div class="header">
+                <button class="btn-action" onclick="logout()"><i class="fas fa-power-off"></i></button>
+                <h1>God-Mode</h1>
+                <p>Monitoring Semua Pemasukan</p>
+            </div>
+            
+            <div class="table-container" style="max-height: 450px;" id="owner-master-data">
+                <!-- Master Data masuk kesini -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 🛠️ DATABASE KREDENSIAL JULDEV 🛠️
+        const authData = {
+            "jull": { pass: "rijo1307", role: "Owner" },
+            "anetha": { pass: "net13", role: "Manager" },
+            "ayya": { pass: "staff13", role: "Staff" },
+            "cheyya": { pass: "staff13", role: "Staff" },
+            "mairaa": { pass: "staff13", role: "Staff" },
+            "jelz": { pass: "elv1", role: "ELV" },
+            "jess": { pass: "elv2", role: "ELV" },
+            "lyna": { pass: "admin2121", role: "Admin" },
+            "ian14": { pass: "admin2121", role: "Admin" },
+            "idha16": { pass: "admin2121", role: "Admin" }
+        };
+
+        let currentUser = ""; let currentRole = "";
+
+        // Auto-Login
+        window.onload = () => {
+            let sesiLogin = localStorage.getItem('hio_active_session');
+            if (sesiLogin && authData[sesiLogin]) {
+                currentUser = sesiLogin; currentRole = authData[sesiLogin].role;
+                if(currentRole === "Owner") { loadOwnerDashboard(); } else { loadWorkerDashboard(); }
+            } else {
+                showView('view-menu');
+            }
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function openLogin(roleTarget) {
+            document.getElementById('login-title').innerText = `Login ${roleTarget}`;
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('loginForm').reset();
+            showView('view-login');
+        }
+
+        function logout() { 
+            currentUser = ""; currentRole = ""; 
+            localStorage.removeItem('hio_active_session');
+            showView('view-menu'); 
+        }
+
+        function getDB() { return JSON.parse(localStorage.getItem('hio_income_db_v2')) || {}; }
+        function saveDB(data) { localStorage.setItem('hio_income_db_v2', JSON.stringify(data)); }
+
+        function generateTimestamp() {
+            const now = new Date();
+            const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const hari = days[now.getDay()];
+            const tanggal = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hari}, ${tanggal} | ${hours}:${minutes} WIB`;
+        }
+
+        // Handle Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let user = document.getElementById('logUser').value.trim().toLowerCase();
+            let pass = document.getElementById('logPass').value.trim().replace(/\s/g, ''); 
+
+            if(authData[user] && authData[user].pass === pass) {
+                currentUser = user; currentRole = authData[user].role;
+                localStorage.setItem('hio_active_session', currentUser);
+                
+                if(currentRole === "Owner") { loadOwnerDashboard(); } else { loadWorkerDashboard(); }
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+
+        // Load Worker Dashboard
+        function loadWorkerDashboard() {
+            document.getElementById('worker-name').innerText = `🔥 ${currentRole} : ${currentUser} 🔥`;
+            showView('view-worker');
+            renderWorkerTable();
+        }
+
+        function renderWorkerTable() {
+            let db = getDB();
+            let myData = db[currentUser] || [];
+            let container = document.getElementById('worker-table-body');
+            container.innerHTML = "";
+
+            if(myData.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open fa-2x" style="color:#cbd5e1; margin-bottom:10px;"></i><br>Belum ada pemasukan yang diinput hari ini.</div>`;
+                return;
+            }
+
+            [...myData].reverse().forEach(item => {
+                container.innerHTML += `
+                    <div class="t-card">
+                        <div class="t-card-top">
+                            <div class="t-cust"><i class="fas fa-user-circle"></i> ${item.cust}</div>
+                            <div class="t-pay"><i class="fas fa-wallet"></i> ${item.pay}</div>
+                        </div>
+                        <div class="t-card-mid">${item.order}</div>
+                        <div class="t-card-bot">
+                            <div class="t-time"><i class="fas fa-history"></i> ${item.timestamp}</div>
+                            <button class="btn-delete" onclick="hapusData(${item.id})"><i class="fas fa-trash-alt"></i> Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Form Submit Data
+        document.getElementById('inputDataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let cust = document.getElementById('inCust').value;
+            let order = document.getElementById('inOrder').value;
+            let pay = document.getElementById('inPay').value;
+            
+            let uniqId = Date.now(); 
+            let timeString = generateTimestamp();
+
+            let db = getDB();
+            if(!db[currentUser]) db[currentUser] = [];
+            
+            db[currentUser].push({ id: uniqId, cust, order, pay, timestamp: timeString });
+            saveDB(db);
+            
+            document.getElementById('inputDataForm').reset();
+            renderWorkerTable(); 
+        });
+
+        function hapusData(idTarget) {
+            let konfirmasi = confirm("Yakin mau hapus data setoran ini boss?");
+            if(konfirmasi) {
+                let db = getDB();
+                db[currentUser] = db[currentUser].filter(item => item.id !== idTarget);
+                saveDB(db);
+                renderWorkerTable(); 
+            }
+        }
+
+        function sendToOwner() {
+            let db = getDB();
+            let myData = db[currentUser] || [];
+            if(myData.length === 0) { alert("Data masih kosong boss, input dulu!"); return; }
+
+            let pesan = `Halo kaa👋\nLaporan Pemasukannya yaa!\n\n` +
+                        `👤 *Pengirim:* ${currentUser} (${currentRole})\n` +
+                        `━━━━━━━━━━━━━━━━━━━━\n`;
+            
+            myData.forEach((item, index) => {
+                pesan += `*${index + 1}. Cust:* ${item.cust}\n` +
+                         `   *Order:* ${item.order}\n` +
+                         `   *Pay:* ${item.pay}\n` +
+                         `   *Waktu:* ${item.timestamp}\n\n`;
+            });
+
+            pesan += `━━━━━━━━━━━━━━━━━━━━\n_Laporan ini dikirim otomatis via HIO STATSDAY._`;
+
+            let linkTele = `https://t.me/kayynl?text=${encodeURIComponent(pesan)}`;
+            window.open(linkTele, '_blank');
+        }
+
+        // Owner Dashboard
+        function loadOwnerDashboard() {
+            showView('view-owner');
+            let db = getDB();
+            let container = document.getElementById('owner-master-data');
+            container.innerHTML = "";
+            let adaData = false;
+
+            for (const [userKey, userData] of Object.entries(db)) {
+                if(userData.length > 0) {
+                    adaData = true;
+                    let roleAsli = authData[userKey].role;
+                    
+                    container.innerHTML += `<div class="owner-section-title"><i class="fas fa-folder-open"></i> ${roleAsli} : ${userKey}</div>`;
+                    
+                    let kartuOwner = "";
+                    [...userData].reverse().forEach(item => {
+                        kartuOwner += `
+                            <div class="t-card" style="background: rgba(255,255,255,0.8);">
+                                <div class="t-card-top">
+                                    <div class="t-cust"><i class="fas fa-user-circle"></i> ${item.cust}</div>
+                                    <div class="t-pay">${item.pay}</div>
+                                </div>
+                                <div class="t-card-mid">${item.order}</div>
+                                <div class="t-card-bot" style="border: none; padding-top:0;">
+                                    <div class="t-time"><i class="fas fa-history"></i> ${item.timestamp}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML += kartuOwner;
+                }
+            }
+
+            if(!adaData) { container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox fa-3x" style="color:#cbd5e1; margin-bottom:15px;"></i><br>Database Master masih kosong boss.</div>`; }
+        }
+    </script>
+</body>
+</html>

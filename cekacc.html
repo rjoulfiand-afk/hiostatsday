@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Top Management - HIO STATSDAY</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --text-dark: #1e293b;
+            --text-soft: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --accent-1: #a1c4fd; 
+            --accent-2: #c2e9fb; 
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 40px 20px;
+            background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden; overflow-y: auto;
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+        /* Background Blobs */
+        .blob { position: fixed; filter: blur(80px); z-index: -1; opacity: 0.6; border-radius: 50%; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #e0c3fc; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #8ec5fc; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        /* 🔐 LAYAR KUNCI VVIP (SECURITY OVERLAY) */
+        #security-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
+            display: flex; justify-content: center; align-items: center; 
+            z-index: 9999; padding: 20px; transition: opacity 0.5s ease;
+        }
+        
+        .lock-box {
+            background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 45px 35px; border-radius: 35px; text-align: center;
+            max-width: 400px; width: 100%;
+            box-shadow: 0 20px 50px rgba(162, 171, 189, 0.3), inset 0 0 0 1px rgba(255,255,255,1);
+            animation: smoothFadeUp 0.6s ease-out forwards;
+        }
+        
+        .lock-icon {
+            font-size: 45px; margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .lock-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+        .lock-desc { font-size: 13px; color: var(--text-soft); margin-bottom: 30px; font-weight: 500;}
+        
+        .pw-input-group { position: relative; margin-bottom: 20px; }
+        .pw-input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-soft); }
+        .pw-input { 
+            width: 100%; padding: 14px 15px 14px 50px; border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6);
+            outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;
+            transition: var(--transition);
+        }
+        .pw-input:focus { background: #fff; border-color: var(--accent-1); box-shadow: 0 5px 15px rgba(161, 196, 253, 0.3); }
+        
+        .btn-unlock {
+            width: 100%; padding: 15px; border-radius: 16px; border: none;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: #1e293b; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; 
+            cursor: pointer; box-shadow: 0 10px 20px rgba(161, 196, 253, 0.4); 
+            transition: var(--transition); font-size: 14px;
+        }
+        .btn-unlock:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(161, 196, 253, 0.6); }
+        
+        .error-msg { color: #ff4757; font-size: 12px; margin-top: 12px; display: none; font-weight: 700; animation: shake 0.4s; }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Container Utama Foto (Sembunyi dulu) */
+        #main-content { display: none; }
+        
+        .gallery-container {
+            width: 100%; max-width: 1200px; margin: 0 auto;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 40px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(162, 171, 189, 0.25), inset 0 0 0 1px rgba(255,255,255,0.8);
+            animation: smoothFadeUp 0.8s ease-out forwards;
+        }
+
+        @keyframes smoothFadeUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* Header / Judul */
+        .header { text-align: center; margin-bottom: 50px; position: relative; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; letter-spacing: 0.5px; }
+        .header p { font-size: 14px; font-weight: 500; color: var(--text-soft); text-transform: uppercase; letter-spacing: 2px; }
+        
+        .btn-back {
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            background: #fff; color: var(--text-dark);
+            width: 45px; height: 45px; border-radius: 14px;
+            display: flex; justify-content: center; align-items: center; font-size: 18px;
+            text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,0.06); transition: var(--transition);
+        }
+        .btn-back:hover { background: var(--accent-1); color: #fff; transform: translateY(-50%) scale(1.05); }
+
+        /* Pembatas Kategori Elegan (Garis Gradasi Kiri Kanan) */
+        .category-title {
+            display: flex; align-items: center; justify-content: center; gap: 20px;
+            font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+            color: var(--text-dark); margin: 40px 0 25px;
+        }
+        .category-title::before, .category-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(30, 41, 59, 0.2), transparent);
+        }
+
+        /* Grid Framework (Lebih presisi) */
+        .grid-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Bingkai Pigora - VVIP Edition */
+        .pigora {
+            background: rgba(255, 255, 255, 0.65);
+            padding: 12px; border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            position: relative; transition: var(--transition);
+            display: flex; flex-direction: column;
+        }
+        .pigora:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 40px rgba(161, 196, 253, 0.4);
+        }
+
+        /* Mahkota */
+        .crown {
+            position: absolute; top: -15px; right: -10px; font-size: 34px; z-index: 10;
+            transform: rotate(15deg); animation: floatCrown 3s ease-in-out infinite;
+        }
+        .crown-pink { color: #ff9a9e; filter: drop-shadow(0 4px 6px rgba(255,154,158,0.5)); }
+        .crown-red { color: #ff4757; filter: drop-shadow(0 4px 6px rgba(255,71,87,0.4)); }
+        @keyframes floatCrown { 0%, 100% { transform: rotate(15deg) translateY(0); } 50% { transform: rotate(15deg) translateY(-5px); } }
+
+        /* Area Foto */
+        .img-lanscape {
+            width: 100%; aspect-ratio: 16 / 9;
+            border-radius: 16px; overflow: hidden;
+            background: #e2e8f0; position: relative;
+        }
+        .img-lanscape img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .pigora:hover .img-lanscape img { transform: scale(1.08); }
+
+        /* Label Bawah (Teks Profil) */
+        .pigora-label {
+            text-align: center; padding: 15px 5px 5px;
+            background: transparent;
+        }
+        .p-name {
+            font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+            color: var(--text-dark); letter-spacing: 0.5px;
+        }
+        .p-role {
+            font-size: 11px; font-weight: 600; color: var(--accent-1);
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+            background: rgba(161, 196, 253, 0.1); display: inline-block;
+            padding: 3px 10px; border-radius: 10px;
+        }
+
+        /* Responsif Khusus HP (Anti-Berantakan) */
+        @media screen and (max-width: 768px) {
+            .gallery-container { padding: 40px 20px; border-radius: 30px; }
+            .grid-gallery { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+            .header h1 { font-size: 26px; }
+            .btn-back { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 20px; }
+            .category-title { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- 🔐 LAYAR KUNCI VVIP -->
+    <div id="security-overlay">
+        <div class="lock-box">
+            <i class="fas fa-lock lock-icon"></i>
+            <h2 class="lock-title">Private Access</h2>
+            <p class="lock-desc">Area ini dilindungi. Masukkan password resmi HIO STATSDAY untuk melihat struktur manajemen.</p>
+            
+            <form id="unlockForm">
+                <div class="pw-input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="pwValue" class="pw-input" placeholder="Ketik Password Disini..." required>
+                </div>
+                <button type="submit" class="btn-unlock"><i class="fas fa-unlock"></i> Buka Brankas</button>
+                <div id="pwError" class="error-msg">Password Salah Boss! Coba cek lagi.</div>
+            </form>
+            
+            <!-- Tombol jalan keluar kalau ternyata orang asing kesasar -->
+            <a href="hio.html" style="display: block; margin-top: 20px; font-size: 12px; color: var(--text-soft); text-decoration: none; font-weight: 600;">&larr; Kembali ke Lobi Utama</a>
+        </div>
+    </div>
+
+    <!-- 🖼️ AREA KONTEN UTAMA (Disembunyikan JS sebelum login) -->
+    <div id="main-content">
+        <div class="gallery-container">
+            
+            <!-- Header -->
+            <div class="header">
+                <a href="hio.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+                <h1>Struktur Organisasi</h1>
+                <p>HIO STATSDAY Top Management</p>
+            </div>
+
+            <!-- ================= KELAS ATAS (Owner & Manager) ================= -->
+            <div class="category-title">Top Management</div>
+            <div class="grid-gallery">
+                
+                <div class="pigora">
+                    <i class="fas fa-crown crown crown-pink"></i>
+                    <div class="img-lanscape"><img src="owna.jpg" alt="Foto Owner"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Michayla</div>
+                        <div class="p-role">Owner</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <i class="fas fa-crown crown crown-red"></i>
+                    <div class="img-lanscape"><img src="natha.jpg" alt="Foto Manager"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Anetha</div>
+                        <div class="p-role">Manager</div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- ================= KELAS STAFF (3 Foto) ================= -->
+            <div class="category-title">Staff Divisi</div>
+            <div class="grid-gallery">
+                
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="aya.png" alt="Staff 1"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Ayya</div>
+                        <div class="p-role">Staff</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="chey.png" alt="Staff 2"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Cheyya</div>
+                        <div class="p-role">Staff</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="ma.jpg" alt="Staff 3"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Maira</div>
+                        <div class="p-role">Staff</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= KELAS ELV (2 Foto) ================= -->
+            <div class="category-title">Divisi ELV</div>
+            <div class="grid-gallery">
+                
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="jelza.jpg" alt="ELV 1"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Jellza</div>
+                        <div class="p-role">ELV Dev</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="jesy.jpg" alt="ELV 2"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Jessica</div>
+                        <div class="p-role">ELV</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= KELAS ADMIN (3 Foto) ================= -->
+            <div class="category-title">Admin System</div>
+            <div class="grid-gallery">
+                
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="skynaa.jpg" alt="Admin 1"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Evelyn</div>
+                        <div class="p-role">Admin</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="ian.png" alt="Admin 2"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Ian</div>
+                        <div class="p-role">Admin</div>
+                    </div>
+                </div>
+
+                <div class="pigora">
+                    <div class="img-lanscape"><img src="ida.jpg" alt="Admin 3"></div>
+                    <div class="pigora-label">
+                        <div class="p-name">Aidha</div>
+                        <div class="p-role">Admin</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 🛠️ LOGIKA SAKTI SECURITY OVERLAY 🛠️
+        document.addEventListener("DOMContentLoaded", () => {
+            const overlay = document.getElementById('security-overlay');
+            const mainContent = document.getElementById('main-content');
+            
+            // 1. Cek Memori HP (Apakah user udah login sebelumnya?)
+            if(sessionStorage.getItem('hio_acc_unlocked') === 'true') {
+                overlay.style.display = 'none'; // Langsung ilangin gemboknya
+                mainContent.style.display = 'block'; // Tunjukin foto-foto
+            }
+
+            // 2. Eksekusi Tombol Submit Password
+            document.getElementById('unlockForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const pw = document.getElementById('pwValue').value;
+                
+                // Password Resmi Boss Jul:
+                if(pw === 'hiostatsday12') {
+                    // Animasi Kaca Pecah (Pudar Elegan)
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    }, 400); // Nunggu setengah detik biar animasinya kelar
+                    
+                    // Simpan Gembok Terbuka di Sesi Ini
+                    sessionStorage.setItem('hio_acc_unlocked', 'true');
+                } else {
+                    // Kalau Password Salah
+                    document.getElementById('pwError').style.display = 'block';
+                    document.getElementById('pwValue').value = ''; // Kosongin inputan biar dia ngetik ulang
+                }
+            });
+        });
+    </script>
+</body>
+</html>

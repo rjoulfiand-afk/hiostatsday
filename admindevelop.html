@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan Tugas - HIO STATSDAY</title>
+    
+    <!-- 👑 NEW FONT AESTHETIC: Cinzel Decorative (Royal) & Outfit (Modern) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --text-dark: #0f172a;
+            --text-soft: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --accent-1: #a1c4fd; 
+            --accent-2: #c2e9fb; 
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Warna Akses Divisi Mewah */
+            --c-manager: #ff758c;
+            --c-admin: #4facfe;
+            --c-staff: #10b981;
+            --c-elv: #f6d365;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent;}
+        
+        body { 
+            color: var(--text-dark); 
+            min-height: 100vh; 
+            background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc); 
+            background-size: 400% 400%; 
+            animation: gradientBG 15s ease infinite; 
+            padding: 20px; 
+            overflow-x: hidden; 
+        }
+        
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .blob { position: fixed; filter: blur(80px); z-index: -1; opacity: 0.6; border-radius: 50%; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #e0c3fc; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #8ec5fc; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        /* Custom Scrollbar Estetik */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+        /* Main Container */
+        .container { 
+            width: 100%; max-width: 1350px; margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.4); 
+            backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
+            border: 1px solid var(--glass-border); border-radius: 40px; 
+            padding: 40px 30px; box-shadow: 0 30px 60px rgba(162, 171, 189, 0.25), inset 0 0 0 1px rgba(255,255,255,0.8); 
+            animation: smoothFadeUp 0.8s ease-out forwards; 
+        }
+        @keyframes smoothFadeUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .header { text-align: center; margin-bottom: 45px; position: relative; }
+        /* 👑 FONT SULTAN DI JUDUL 👑 */
+        .header h1 { font-family: 'Cinzel Decorative', serif; font-size: 38px; font-weight: 900; color: var(--text-dark); margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); letter-spacing: 1px;}
+        .header p { font-size: 14px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 3px; }
+        
+        .btn-action { 
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%); 
+            background: #fff; width: 45px; height: 45px; border-radius: 14px; 
+            display: flex; justify-content: center; align-items: center; 
+            color: var(--text-dark); font-size: 18px; text-decoration: none; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); transition: var(--transition); 
+        }
+        .btn-action:hover { background: var(--text-dark); color: #fff; transform: translateY(-50%) scale(1.05); }
+
+        /* KANBAN BOARD GRID */
+        .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; align-items: start; }
+        
+        /* Panel Kolom Kaca */
+        .board-col { 
+            background: rgba(255, 255, 255, 0.6); border-radius: 28px; padding: 18px; 
+            border: 1px solid #ffffff; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 15px 30px rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; max-height: 600px; 
+        }
+        
+        .task-list-area { overflow-y: auto; overflow-x: hidden; padding-right: 5px; flex: 1; min-height: 200px; }
+
+        /* Judul Kolom Premium */
+        .col-header { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 18px; margin-bottom: 18px; border-radius: 18px; 
+            color: #fff; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 14px; 
+            text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .col-badge { background: rgba(255,255,255,0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+
+        .bg-manager { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); }
+        .bg-admin { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-staff { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+        .bg-elv { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+
+        /* KARTU TUGAS 3D */
+        .task-card { 
+            background: #ffffff; border-radius: 18px; padding: 18px; margin-bottom: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: var(--transition); 
+            position: relative; word-wrap: break-word; border: 1px solid rgba(0,0,0,0.02);
+        }
+        .task-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 30px rgba(161, 196, 253, 0.4); z-index: 2;}
+        
+        .accent-Manager { border-left: 5px solid var(--c-manager); }
+        .accent-Admin { border-left: 5px solid var(--c-admin); }
+        .accent-Staff { border-left: 5px solid var(--c-staff); }
+        .accent-ELV { border-left: 5px solid var(--c-elv); }
+
+        .task-text { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 15px; line-height: 1.6; }
+        
+        .task-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 12px; }
+        .task-time { font-size: 11px; color: var(--text-soft); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        
+        /* Tombol Selesai VVIP */
+        .btn-hapus { 
+            background: linear-gradient(135deg, #f8f9fa, #e2e8f0); color: var(--text-soft); 
+            border: 1px solid #cbd5e1; border-radius: 12px; padding: 6px 14px; 
+            font-size: 11px; font-weight: 800; cursor: pointer; transition: var(--transition); 
+            display: flex; align-items: center; gap: 6px; text-transform: uppercase;
+        }
+        .btn-hapus:hover { 
+            background: linear-gradient(135deg, #10b981, #34d399); color: #fff; border-color: transparent;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); transform: scale(1.05);
+        }
+
+        /* 🔘 TOMBOL LAPOR OWNER MELAYANG (FAB) 🔘 */
+        .fab-lapor {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #1e293b, #475569); color: #fff;
+            padding: 15px 25px; border-radius: 30px; font-family: 'Outfit', sans-serif;
+            font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; border: none; box-shadow: 0 15px 35px rgba(30, 41, 59, 0.4);
+            display: flex; align-items: center; gap: 10px; transition: var(--transition); z-index: 100;
+        }
+        .fab-lapor:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(30, 41, 59, 0.6); background: linear-gradient(135deg, #0f172a, #334155); }
+        .fab-lapor i { font-size: 18px; color: #f6d365; }
+
+        /* 🔐 MODAL OTORISASI (SECURITY POPUP) 🔐 */
+        #auth-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            display: none; justify-content: center; align-items: center; 
+            z-index: 9999; padding: 20px;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        #auth-modal.show { display: flex; opacity: 1; }
+        
+        .auth-box {
+            background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 40px 35px; border-radius: 35px; text-align: center; max-width: 400px; width: 100%;
+            box-shadow: 0 30px 60px rgba(162, 171, 189, 0.4), inset 0 0 0 1px rgba(255,255,255,1);
+            transform: translateY(30px); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #auth-modal.show .auth-box { transform: translateY(0); }
+        
+        .auth-icon { font-size: 40px; margin-bottom: 15px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-title { font-family: 'Cinzel Decorative', serif; font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 5px; }
+        .auth-desc { font-size: 13px; color: var(--text-soft); font-weight: 600; margin-bottom: 25px; }
+        
+        .input-group-auth { position: relative; margin-bottom: 15px; }
+        .input-group-auth i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .auth-input { 
+            width: 100%; padding: 15px 15px 15px 50px; border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6);
+            outline: none; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;
+            transition: var(--transition);
+        }
+        .auth-input:focus { background: #fff; border-color: var(--accent-1); box-shadow: 0 5px 15px rgba(161, 196, 253, 0.3); }
+        .auth-input:focus + i { color: var(--accent-1); }
+        
+        .btn-confirm {
+            width: 100%; padding: 15px; border-radius: 16px; border: none; margin-top: 10px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: #1e293b; font-weight: 800; font-family: 'Outfit', sans-serif; font-size: 14px; text-transform: uppercase;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(161, 196, 253, 0.4); transition: var(--transition);
+        }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(161, 196, 253, 0.6); }
+        .btn-cancel {
+            background: none; border: none; color: var(--text-soft); font-family: 'Outfit', sans-serif;
+            font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; text-decoration: underline;
+        }
+
+        .error-msg { color: #ff4757; font-size: 12px; margin-top: 12px; display: none; font-weight: 700; animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Tampilan Kalau Kosong */
+        .empty-task { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 10px; text-align: center; color: #94a3b8; }
+        .empty-task i { font-size: 38px; margin-bottom: 12px; color: #e2e8f0; }
+        .empty-task span { font-size: 13px; font-weight: 600; }
+
+        /* Responsif HP */
+        @media screen and (max-width: 1100px) { .board-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media screen and (max-width: 600px) { 
+            .container { padding: 40px 20px; border-radius: 35px; }
+            .board-grid { grid-template-columns: 1fr; } 
+            .header h1 { font-size: 30px; }
+            .btn-action { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 15px; }
+            .board-col { max-height: 500px; }
+            .fab-lapor { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div><div class="blob blob-2"></div>
+    
+    <div class="container">
+        <div class="header">
+            <a href="hio.html" class="btn-action"><i class="fas fa-arrow-left"></i></a>
+            <h1>Task Board</h1>
+            <p>Exclusive HIO STATSDAY</p>
+        </div>
+
+        <div class="board-grid">
+            <!-- Kolom Manager -->
+            <div class="board-col">
+                <div class="col-header bg-manager">
+                    <span><i class="fas fa-user-tie"></i> Manager</span>
+                    <span class="col-badge" id="count-Manager">0</span>
+                </div>
+                <div class="task-list-area" id="list-Manager"></div>
+            </div>
+
+            <!-- Kolom Admin -->
+            <div class="board-col">
+                <div class="col-header bg-admin">
+                    <span><i class="fas fa-laptop-code"></i> Admin</span>
+                    <span class="col-badge" id="count-Admin">0</span>
+                </div>
+                <div class="task-list-area" id="list-Admin"></div>
+            </div>
+
+            <!-- Kolom Staff -->
+            <div class="board-col">
+                <div class="col-header bg-staff">
+                    <span><i class="fas fa-users"></i> Staff</span>
+                    <span class="col-badge" id="count-Staff">0</span>
+                </div>
+                <div class="task-list-area" id="list-Staff"></div>
+            </div>
+
+            <!-- Kolom ELV -->
+            <div class="board-col">
+                <div class="col-header bg-elv">
+                    <span><i class="fas fa-bolt"></i> ELV</span>
+                    <span class="col-badge" id="count-ELV">0</span>
+                </div>
+                <div class="task-list-area" id="list-ELV"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tombol Lapor Owner -->
+    <button class="fab-lapor" onclick="bukaGembok('REPORT')">
+        <i class="fas fa-envelope-open-text"></i> Lapor Selesai
+    </button>
+
+    <!-- 🔐 MODAL OTENTIKASI 🔐 -->
+    <div id="auth-modal">
+        <div class="auth-box">
+            <i class="fas fa-fingerprint auth-icon"></i>
+            <h2 class="auth-title">Otorisasi</h2>
+            <p class="auth-desc" id="auth-desc-text">Masukkan username & password untuk konfirmasi akses divisi.</p>
+            
+            <form id="authForm">
+                <div class="input-group-auth">
+                    <input type="text" id="authObjUser" class="auth-input" placeholder="Username Divisi" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group-auth">
+                    <input type="password" id="authObjPass" class="auth-input" placeholder="Password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div id="authError" class="error-msg">Akses Ditolak! Kredensial tidak sesuai divisi.</div>
+                
+                <button type="submit" class="btn-confirm" id="btn-confirm-text">Verifikasi</button>
+            </form>
+            <button class="btn-cancel" onclick="tutupGembok()">Batalkan</button>
+        </div>
+    </div>
+
+    <script>
+        // 🛠️ DATABASE KREDENSIAL JULDEV 🛠️
+        const authData = {
+            "jull": { pass: "rijo1307", role: "Owner" },
+            "anetha": { pass: "net13", role: "Manager" },
+            "ayya": { pass: "staff13", role: "Staff" },
+            "cheyya": { pass: "staff13", role: "Staff" },
+            "mairaa": { pass: "staff13", role: "Staff" },
+            "jelz": { pass: "elv1", role: "ELV" },
+            "jess": { pass: "elv2", role: "ELV" },
+            "lyna": { pass: "admin2121", role: "Admin" },
+            "ian14": { pass: "admin2121", role: "Admin" },
+            "idha16": { pass: "admin2121", role: "Admin" }
+        };
+
+        const divList = ["Manager", "Admin", "Staff", "ELV"];
+        
+        // State Modal
+        let aksiTertunda = "";
+        let divisiTertunda = "";
+        let idTertunda = null;
+
+        // Render Kanban
+        function renderTasks() {
+            let dbTugas = JSON.parse(localStorage.getItem('hio_task_db')) || { "Manager": [], "Admin": [], "Staff": [], "ELV": [] };
+
+            divList.forEach(divisi => {
+                let wadah = document.getElementById(`list-${divisi}`);
+                let badgeCount = document.getElementById(`count-${divisi}`);
+                wadah.innerHTML = ""; 
+                let dataDivisi = dbTugas[divisi] || [];
+                badgeCount.innerText = dataDivisi.length;
+
+                if(dataDivisi.length === 0) {
+                    wadah.innerHTML = `<div class="empty-task"><i class="fas fa-coffee"></i><span>Tugas masih kosong.</span></div>`;
+                } else {
+                    [...dataDivisi].reverse().forEach(tugas => {
+                        wadah.innerHTML += `
+                            <div class="task-card accent-${divisi}">
+                                <div class="task-text">${tugas.teks}</div>
+                                <div class="task-footer">
+                                    <div class="task-time"><i class="fas fa-history"></i> ${tugas.waktu}</div>
+                                    <button class="btn-hapus" onclick="bukaGembok('DELETE', '${divisi}', ${tugas.id})">
+                                        <i class="fas fa-check-circle"></i> Selesai
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // Buka Kunci / Modal
+        function bukaGembok(aksi, divisi = "", id = null) {
+            aksiTertunda = aksi;
+            divisiTertunda = divisi;
+            idTertunda = id;
+            
+            document.getElementById('authObjUser').value = "";
+            document.getElementById('authObjPass').value = "";
+            document.getElementById('authError').style.display = 'none';
+
+            let modal = document.getElementById('auth-modal');
+            let desc = document.getElementById('auth-desc-text');
+            let btn = document.getElementById('btn-confirm-text');
+
+            if(aksi === 'DELETE') {
+                desc.innerText = `Otorisasi diperlukan untuk menghapus tugas ${divisi}.`;
+                btn.innerText = "Hapus Tugas";
+            } else if(aksi === 'REPORT') {
+                desc.innerText = `Login untuk membuat laporan selesai ke Owner.`;
+                btn.innerText = "Buat Laporan";
+            }
+
+            modal.classList.add('show');
+        }
+
+        function tutupGembok() {
+            document.getElementById('auth-modal').classList.remove('show');
+        }
+
+        // Eksekusi Submit Modal
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let user = document.getElementById('authObjUser').value.trim().toLowerCase();
+            let pass = document.getElementById('authObjPass').value.trim().replace(/\s/g, ''); 
+            let errorMsg = document.getElementById('authError');
+
+            // Cek Kredensial
+            if(authData[user] && authData[user].pass === pass) {
+                let roleLogin = authData[user].role;
+
+                if(aksiTertunda === 'DELETE') {
+                    // Validasi: Cuma Divisi itu sendiri atau Owner yang boleh hapus
+                    if(roleLogin === divisiTertunda || roleLogin === "Owner") {
+                        // Hapus Tugas
+                        let dbTugas = JSON.parse(localStorage.getItem('hio_task_db'));
+                        dbTugas[divisiTertunda] = dbTugas[divisiTertunda].filter(t => t.id !== idTertunda);
+                        localStorage.setItem('hio_task_db', JSON.stringify(dbTugas));
+                        
+                        tutupGembok();
+                        renderTasks();
+                    } else {
+                        // Beda divisi boss!
+                        errorMsg.innerText = `Akses Ditolak! Akun ${roleLogin} tidak bisa hapus tugas ${divisiTertunda}.`;
+                        errorMsg.style.display = 'block';
+                    }
+
+                } else if(aksiTertunda === 'REPORT') {
+                    // Generate Teks Laporan Estetik
+                    tutupGembok();
+
+                    // Tanggal Lapor
+                    let now = new Date();
+                    let jamLapor = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+
+                    let pesanFormat = `⚜️ *EXECUTIVE REPORT* ⚜️\n\n` +
+                                      `Haloo kak Kayy! 👋\n` +
+                                      `Tugas dari *Papan Command* untuk divisi *${roleLogin}* sudah saya selesaikan semua dengan aman dan terkendali. Terima kasihh! ✨\n\n` +
+                                      `👤 *Pelapor:* ${user}\n` +
+                                      `💼 *Divisi:* ${roleLogin}\n` +
+                                      `⏱️ *Waktu Lapor:* ${jamLapor} WIB\n\n` +
+                                      `_Sistem terverifikasi oleh HIO STATSDAY Web._`;
+
+                    let linkTelegram = `https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`;
+                    window.open(linkTelegram, '_blank');
+                }
+            } else {
+                errorMsg.innerText = "Username atau Password salah!";
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        window.onload = () => {
+            renderTasks();
+            setInterval(renderTasks, 2000); 
+        };
+    </script>
+</body>
+</html>
