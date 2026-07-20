@@ -8,7 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- 🔥 SUNTIKAN FIREBASE SDK (MEKANIK TARUH SINI) 🔥 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
+        /* ========================================================
+           SEMUA DESIGN LU AMAN BOSS! GA ADA YANG DIHAPUS 1 HURUF PUN
+           ======================================================== */
         :root {
             --text-dark: #0f172a;
             --text-soft: #64748b;
@@ -226,39 +233,68 @@
     </div>
 
     <script>
+        // ========================================================
+        // 🔥 LOGIKA FIREBASE CLOUD (PENGGANTI LOCALSTORAGE) 🔥
+        // ========================================================
+
+        // 1. CONFIG FIREBASE LU DARI SCREENSHOT
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuAbkyL3pyvPNWG9u3EyPyhdQn4y7blkc",
+            authDomain: "juldev-command-center.firebaseapp.com",
+            databaseURL: "https://juldev-command-center-default-rtdb.firebaseio.com",
+            projectId: "juldev-command-center",
+            storageBucket: "juldev-command-center.firebasestorage.app",
+            messagingSenderId: "859594134847",
+            appId: "1:859594134847:web:83a11af82db0095bd22f8a"
+        };
+        
+        // 2. NYALAIN MESIN FIREBASE
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 3. LOGIKA SUBMIT
         document.getElementById('formTugas').addEventListener('submit', function(e) {
             e.preventDefault();
             let divisi = document.getElementById('inDivisi').value;
             let teksTugas = document.getElementById('inTugas').value;
             let uniqId = Date.now(); 
             
-            // Generate Waktu
+            // Generate Waktu (Aman ga disentuh)
             let now = new Date();
             let tanggal = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             let jam = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
             let timestamp = `${tanggal} | ${jam} WIB`;
 
-            // Buka Brankas Lokal
-            let dbTugas = JSON.parse(localStorage.getItem('hio_task_db')) || { "Manager": [], "Admin": [], "Staff": [], "ELV": [] };
-            
-            // Masukin Data Baru
-            dbTugas[divisi].push({ id: uniqId, teks: teksTugas, waktu: timestamp });
-            localStorage.setItem('hio_task_db', JSON.stringify(dbTugas));
+            // 🔥 BUKA BRANKAS CLOUD (FIREBASE) BUKAN LOCALSTORAGE LAGI 🔥
+            db.ref('tasks/data').once('value').then((snapshot) => {
+                let dbTugas = snapshot.val() || { "Manager": [], "Admin": [], "Staff": [], "ELV": [] };
+                
+                // Jaga-jaga kalau array divisinya belum ada di cloud
+                if (!dbTugas[divisi]) dbTugas[divisi] = [];
 
-            // Reset Form 
-            document.getElementById('formTugas').reset();
+                // Masukin Data Baru ke Antrian
+                dbTugas[divisi].push({ id: uniqId, teks: teksTugas, waktu: timestamp });
+                
+                // 🔥 TEMBAK DATA KE CLOUD 🔥
+                db.ref('tasks/data').set(dbTugas).then(() => {
+                    
+                    // Kalau berhasil dikirim ke awan, baru reset form & munculin notif
+                    document.getElementById('formTugas').reset();
 
-            // Munculin Notifikasi Ala iPhone (Drop dari atas)
-            let toast = document.getElementById('toastNotif');
-            toast.classList.add('show');
-            
-            // Haptic Feedback (Kalau HP support)
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                    // Munculin Notifikasi Ala iPhone
+                    let toast = document.getElementById('toastNotif');
+                    toast.classList.add('show');
+                    
+                    // Haptic Feedback (Kalau HP support)
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-            // Ilangin notif setelah 3 detik
-            setTimeout(() => { 
-                toast.classList.remove('show'); 
-            }, 3000);
+                    // Ilangin notif setelah 3 detik
+                    setTimeout(() => { 
+                        toast.classList.remove('show'); 
+                    }, 3000);
+
+                });
+            });
         });
     </script>
 </body>
