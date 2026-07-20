@@ -9,7 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- 🔥 SUNTIKAN FIREBASE SDK 🔥 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <style>
+        /* ========================================================
+           SEMUA DESIGN LU AMAN BOSS! GA ADA YANG DIHAPUS 
+           ======================================================== */
         :root {
             --text-dark: #0f172a;
             --text-soft: #64748b;
@@ -288,7 +295,9 @@
     </div>
 
     <script>
+        // ========================================================
         // 🛠️ DATABASE KREDENSIAL JULDEV 🛠️
+        // ========================================================
         const authData = {
             "jull": { pass: "rijo1307", role: "Owner" },
             "anetha": { pass: "net13", role: "Manager" },
@@ -309,10 +318,31 @@
         let divisiTertunda = "";
         let idTertunda = null;
 
-        // Render Kanban
-        function renderTasks() {
-            let dbTugas = JSON.parse(localStorage.getItem('hio_task_db')) || { "Manager": [], "Admin": [], "Staff": [], "ELV": [] };
+        // ========================================================
+        // 🔥 FIREBASE CLOUD SETUP 🔥
+        // ========================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuAbkyL3pyvPNWG9u3EyPyhdQn4y7blkc",
+            authDomain: "juldev-command-center.firebaseapp.com",
+            databaseURL: "https://juldev-command-center-default-rtdb.firebaseio.com",
+            projectId: "juldev-command-center",
+            storageBucket: "juldev-command-center.firebasestorage.app",
+            messagingSenderId: "859594134847",
+            appId: "1:859594134847:web:83a11af82db0095bd22f8a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
+        // ========================================================
+        // 🔥 ANTENA REAL-TIME (Menggantikan setInterval & localStorage) 🔥
+        // ========================================================
+        db.ref('tasks/data').on('value', (snapshot) => {
+            const dbTugas = snapshot.val() || { "Manager": [], "Admin": [], "Staff": [], "ELV": [] };
+            renderTasksUI(dbTugas);
+        });
+
+        // FUNGSI RENDER VISUAL KANBAN
+        function renderTasksUI(dbTugas) {
             divList.forEach(divisi => {
                 let wadah = document.getElementById(`list-${divisi}`);
                 let badgeCount = document.getElementById(`count-${divisi}`);
@@ -340,7 +370,7 @@
             });
         }
 
-        // Buka Kunci / Modal
+        // FUNGSI MODAL OTENTIKASI
         function bukaGembok(aksi, divisi = "", id = null) {
             aksiTertunda = aksi;
             divisiTertunda = divisi;
@@ -369,38 +399,35 @@
             document.getElementById('auth-modal').classList.remove('show');
         }
 
-        // Eksekusi Submit Modal
+        // EKSEKUSI LOGIKA SULTAN SETELAH LOGIN 
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
             let user = document.getElementById('authObjUser').value.trim().toLowerCase();
             let pass = document.getElementById('authObjPass').value.trim().replace(/\s/g, ''); 
             let errorMsg = document.getElementById('authError');
 
-            // Cek Kredensial
             if(authData[user] && authData[user].pass === pass) {
                 let roleLogin = authData[user].role;
 
                 if(aksiTertunda === 'DELETE') {
-                    // Validasi: Cuma Divisi itu sendiri atau Owner yang boleh hapus
+                    // Validasi: Cuma Divisi itu atau Owner yang boleh hapus
                     if(roleLogin === divisiTertunda || roleLogin === "Owner") {
-                        // Hapus Tugas
-                        let dbTugas = JSON.parse(localStorage.getItem('hio_task_db'));
-                        dbTugas[divisiTertunda] = dbTugas[divisiTertunda].filter(t => t.id !== idTertunda);
-                        localStorage.setItem('hio_task_db', JSON.stringify(dbTugas));
+                        
+                        // 🔥 HAPUS DARI FIREBASE CLOUD 🔥
+                        db.ref('tasks/data').once('value').then((snapshot) => {
+                            let dbTugas = snapshot.val();
+                            dbTugas[divisiTertunda] = dbTugas[divisiTertunda].filter(t => t.id !== idTertunda);
+                            db.ref('tasks/data').set(dbTugas); // Tembak balik ke Cloud
+                        });
                         
                         tutupGembok();
-                        renderTasks();
                     } else {
-                        // Beda divisi boss!
                         errorMsg.innerText = `Akses Ditolak! Akun ${roleLogin} tidak bisa hapus tugas ${divisiTertunda}.`;
                         errorMsg.style.display = 'block';
                     }
 
                 } else if(aksiTertunda === 'REPORT') {
-                    // Generate Teks Laporan Estetik
                     tutupGembok();
-
-                    // Tanggal Lapor
                     let now = new Date();
                     let jamLapor = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
 
@@ -420,11 +447,6 @@
                 errorMsg.style.display = 'block';
             }
         });
-
-        window.onload = () => {
-            renderTasks();
-            setInterval(renderTasks, 2000); 
-        };
     </script>
 </body>
 </html>
