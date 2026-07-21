@@ -36,7 +36,10 @@
             color: var(--text-dark);
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            padding: 20px; overflow: hidden; 
+            /* 🔥 Ini yang diganti biar bisa scroll ke bawah 🔥 */
+            padding: 40px 20px; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
             background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -160,11 +163,12 @@
 
         /* Responsif HP Kecil */
         @media screen and (max-width: 400px) {
-            .lobby-container { padding: 40px 25px; }
+            /* 🔥 Tambahin margin biar enak di-scroll 🔥 */
+            .lobby-container { padding: 40px 25px; margin: 40px 0; }
             .lobby-title { font-size: 26px; }
             .card-icon { width: 45px; height: 45px; font-size: 18px; }
             .card-title { font-size: 15px; }
-        }
+        }   
     </style>
 </head>
 <body>
