@@ -321,7 +321,7 @@
                 wadah.innerHTML = ""; 
 
                 if(dataDivisi.length === 0) {
-                    wadah.innerHTML = `<div class="empty-task"><i class="fas fa-shield-alt" style="font-size:45px; color:rgba(0,0,0,0.1); margin-bottom:15px;"></i><span style="font-size:13px; font-weight:700; color:#94a3b8; font-family:'Plus Jakarta Sans';">Area Terkendali.</span></div>`;
+                    wadah.innerHTML = `<div class="empty-task"><i class="fas fa-shield-alt" style="font-size:45px; color:rgba(0,0,0,0.1); margin-bottom:15px;"></i><span style="font-size:13px; font-weight:700; color:#94a3b8; font-family:'Plus Jakarta Sans';">Belum Ada Tugas</span></div>`;
                 } else {
                     [...dataDivisi].reverse().forEach(tugas => {
                         let judulTugas = tugas.judul || tugas.teks || "Tugas Tanpa Judul";
