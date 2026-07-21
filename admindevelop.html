@@ -68,22 +68,23 @@
 
         /* 👑 HEADER PANEL VVIP */
         .header-panel {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: center; align-items: center; position: relative;
             background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
             padding: 20px 30px; border-radius: 30px; border: 1px solid #fff;
             box-shadow: 0 15px 35px rgba(0,0,0,0.03); margin-bottom: 40px;
         }
-        .header-title-area { display: flex; flex-direction: column; }
+        .header-title-area { display: flex; flex-direction: column; text-align: center; }
         .header-title-area h1 { font-family: 'Cinzel Decorative', serif; font-size: 34px; font-weight: 900; background: linear-gradient(to right, #0f172a, #475569); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2px;}
         .header-title-area p { font-size: 13px; font-weight: 700; color: var(--accent-1); text-transform: uppercase; letter-spacing: 4px; }
         
         .btn-action-back { 
+            position: absolute; left: 30px; top: 50%; transform: translateY(-50%); z-index: 10;
             width: 50px; height: 50px; border-radius: 18px; 
             background: #fff; color: var(--text-dark); font-size: 20px;
             display: flex; justify-content: center; align-items: center; text-decoration: none; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); transition: var(--transition); border: 1px solid #fff;
         }
-        .btn-action-back:hover { background: var(--text-dark); color: #fff; transform: scale(1.05) rotate(-5deg); box-shadow: 0 15px 35px rgba(15,23,42,0.2);}
+        .btn-action-back:hover { background: var(--text-dark); color: #fff; transform: translateY(-50%) scale(1.05) rotate(-5deg); box-shadow: 0 15px 35px rgba(15,23,42,0.2);}
 
         /* 📊 KANBAN BOARD TRACKS */
         .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; align-items: start; }
@@ -190,7 +191,18 @@
         .empty-task { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 10px; text-align: center; color: #94a3b8; }
         
         @media screen and (max-width: 1200px) { .board-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media screen and (max-width: 600px) { body { padding: 15px; } .dashboard-container { padding: 30px 20px; border-radius: 35px; } .board-grid { grid-template-columns: 1fr; gap: 25px;} .header-panel { flex-direction: column; gap: 15px; text-align: center; padding: 25px 20px;} .btn-action-back { position: static; transform: none; width: 100%; } .btn-action-back:hover { transform: translateY(-2px); } .board-col { max-height: 550px; } .fab-lapor { bottom: 20px; right: 20px; padding: 14px 20px; font-size: 12px; } }
+       @media screen and (max-width: 600px) { 
+            body { padding: 15px; } 
+            .dashboard-container { padding: 30px 20px; border-radius: 35px; } 
+            .board-grid { grid-template-columns: 1fr; gap: 25px;} 
+            .header-panel { padding: 25px 20px; justify-content: center; } 
+            .header-title-area h1 { font-size: 26px; } 
+            .header-title-area p { font-size: 11px; }
+            .btn-action-back { left: 15px; width: 42px; height: 42px; font-size: 16px; } 
+            .btn-action-back:hover { transform: translateY(-50%) scale(1.05) rotate(0deg); } 
+            .board-col { max-height: 550px; } f
+            .fab-lapor { bottom: 20px; right: 20px; padding: 14px 20px; font-size: 12px; } 
+        }
     </style>
 </head>
 <body>
@@ -204,7 +216,7 @@
                 <h1>Command Center</h1>
                 <p>Task Board Exclusive</p>
             </div>
-            <div style="width: 50px;"></div> <!-- Spacer buat balance flexbox -->
+            
         </div>
 
         <!-- KANBAN BOARD -->
