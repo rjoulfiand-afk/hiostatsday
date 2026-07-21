@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cuti VVIP - HIO STATSDAY</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --text-dark: #0f172a;
+            --text-soft: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --accent-1: #a1c4fd; 
+            --accent-2: #c2e9fb; 
+            --accent-vip: #ff9a9e;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            padding: 40px 20px;
+            background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden; overflow-y: auto;
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+        .blob { position: fixed; filter: blur(80px); z-index: -1; opacity: 0.6; border-radius: 50%; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #e0c3fc; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #8ec5fc; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        /* 🎟️ TICKET BOARDING PASS DESIGN 🎟️ */
+        .ticket-container {
+            width: 100%; max-width: 550px; 
+            background: var(--glass-bg);
+            backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(162, 171, 189, 0.4), inset 0 0 0 1px rgba(255,255,255,1);
+            animation: smoothFadeUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            position: relative; overflow: hidden;
+        }
+        @keyframes smoothFadeUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* Garis Sobek Tiket */
+        .ticket-divider {
+            height: 0; border-top: 3px dashed rgba(255, 255, 255, 0.9);
+            margin: 10px 0 25px; position: relative;
+        }
+        .ticket-divider::before, .ticket-divider::after {
+            content: ''; position: absolute; top: -15px; width: 30px; height: 30px;
+            background: #cbd5e1; /* Warna bayangan bg */
+            border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        .ticket-divider::before { left: -45px; }
+        .ticket-divider::after { right: -45px; }
+
+        .ticket-header { padding: 40px 40px 10px; text-align: center; position: relative; }
+        
+        .header-badge {
+            display: inline-block; background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #fff; font-size: 10px; font-weight: 800; padding: 5px 15px;
+            border-radius: 20px; letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 15px; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        .ticket-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; letter-spacing: 0.5px;}
+        .ticket-header p { font-size: 13px; font-weight: 500; color: var(--text-soft); }
+        
+        .btn-back {
+            position: absolute; left: 30px; top: 30px; 
+            background: #ffffff; color: var(--text-dark);
+            width: 42px; height: 42px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; font-size: 16px;
+            text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,0.06); transition: var(--transition);
+        }
+        .btn-back:hover { background: var(--accent-1); color: #fff; transform: scale(1.08); }
+
+        .ticket-body { padding: 0 40px 40px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 11px; font-weight: 800; margin-bottom: 8px;
+            color: var(--text-soft); padding-left: 5px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        .input-wrapper { position: relative; }
+        .input-wrapper i.icon-left {
+            position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 16px; transition: var(--transition); z-index: 2;
+        }
+
+        .form-control {
+            width: 100%; background: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 18px;
+            padding: 15px 15px 15px 50px; 
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600;
+            color: var(--text-dark); transition: var(--transition); outline: none;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .form-control::placeholder { color: #94a3b8; font-weight: 500; }
+        .form-control:focus {
+            background: #ffffff; border-color: transparent;
+            box-shadow: 0 0 0 4px rgba(161, 196, 253, 0.25), 0 10px 20px rgba(161, 196, 253, 0.15);
+            transform: translateY(-2px);
+        }
+        .form-control:focus + i.icon-left, .input-wrapper:focus-within i.icon-left { transform: translateY(-50%) scale(1.15); }
+
+        select.form-control { appearance: none; cursor: pointer; }
+        .select-arrow { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--text-soft); pointer-events: none; font-size: 12px; }
+        textarea.form-control { padding-top: 18px; resize: none; height: 100px; }
+        .textarea-wrapper i.icon-left { top: 25px; }
+
+        /* Form Row 2 Kolom */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+
+        /* Barcode Aesthetic di Bawah */
+        .barcode-area { text-align: center; margin-top: 20px; opacity: 0.5; }
+        .barcode-area i { font-size: 40px; color: var(--text-dark); letter-spacing: 5px; }
+
+        .btn-submit {
+            width: 100%; margin-top: 10px; padding: 18px;
+            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            color: #0f172a; border: none; border-radius: 20px;
+            font-size: 14px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;
+            text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: var(--transition);
+            box-shadow: 0 15px 30px rgba(161, 196, 253, 0.4), inset 0 2px 0 rgba(255,255,255,0.6);
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        .btn-submit::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transition: all 0.6s ease;
+        }
+        .btn-submit:hover::after { left: 100%; }
+        .btn-submit:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(161, 196, 253, 0.6); }
+
+        @media screen and (max-width: 600px) {
+            .ticket-container { max-width: 100%; border-radius: 35px; }
+            .ticket-header { padding: 35px 25px 5px; }
+            .ticket-body { padding: 0 25px 35px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; margin-bottom: 0; }
+            .ticket-divider::before { left: -40px; }
+            .ticket-divider::after { right: -40px; }
+            .btn-back { left: 20px; top: 20px; width: 38px; height: 38px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="ticket-container">
+        
+        <div class="ticket-header">
+            <a href="hio.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+            <div class="header-badge"><i class="fas fa-plane"></i> First Class</div>
+            <h1>Boarding Pass</h1>
+            <p>Pengajuan Cuti / Izin Istirahat</p>
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-body">
+            <form id="cutiForm">
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Nama</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="inNama" class="form-control" placeholder="Nama kamu" required>
+                            <i class="fas fa-user-circle icon-left"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Kelas Divisi</label>
+                        <div class="input-wrapper">
+                            <select id="inDivisi" class="form-control" required>
+                                <option value="" disabled selected>Pilih divisi...</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Admin System">Admin System</option>
+                                <option value="Staff Divisi">Staff Divisi</option>
+                                <option value="Divisi ELV">Divisi ELV</option>
+                            </select>
+                            <i class="fas fa-briefcase icon-left"></i>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Tanggal Cuti</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="inTanggal" class="form-control" placeholder="Contoh: 21 Juli - 23 Juli 2026" required>
+                        <i class="fas fa-calendar-alt icon-left"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Tujuan & Alasan</label>
+                    <div class="input-wrapper textarea-wrapper">
+                        <textarea id="inAlasan" class="form-control" placeholder="Jelaskan alasan izin / cuti dengan singkat..." required></textarea>
+                        <i class="fas fa-plane-arrival icon-left"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Ajukan Cuti ke Owner
+                </button>
+
+                <div class="barcode-area">
+                    <i class="fas fa-barcode"></i>
+                    <i class="fas fa-barcode"></i>
+                    <i class="fas fa-barcode"></i>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // ========================================================
+        // 🔮 FUNGSI SAKTI UNICODE BOLD (ANTI BEBAL TELEGRAM) 🔮
+        // ========================================================
+        function teksTebal(text) {
+            const boldMap = {
+                'a':'𝗮','b':'𝗯','c':'𝗰','d':'𝗱','e':'𝗲','f':'𝗳','g':'𝗴','h':'𝗵','i':'𝗶','j':'𝗷','k':'𝗸','l':'𝗹','m':'𝗺','n':'𝗻','o':'𝗼','p':'𝗽','q':'𝗾','r':'𝗿','s':'𝘀','t':'𝘁','u':'𝘂','v':'𝘃','w':'𝘄','x':'𝘅','y':'𝘆','z':'𝘇',
+                'A':'𝗔','B':'𝗕','C':'𝗖','D':'𝗗','E':'𝗘','F':'𝗙','G':'𝗚','H':'𝗛','I':'𝗜','J':'𝗝','K':'𝗞','L':'𝗟','M':'𝗠','N':'𝗡','O':'𝗢','P':'𝗣','Q':'𝗤','R':'𝗥','S':'𝗦','T':'𝗧','U':'𝗨','V':'𝗩','W':'𝗪','X':'𝗫','Y':'𝗬','Z':'𝗭',
+                '0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'
+            };
+            return text.split('').map(char => boldMap[char] || char).join('');
+        }
+
+        // 🔥 LOGIKA SUBMIT BOARDING PASS KE TELEGRAM OWNER 🔥
+        document.getElementById('cutiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let nama = document.getElementById('inNama').value;
+            let divisi = document.getElementById('inDivisi').value;
+            let tgl = document.getElementById('inTanggal').value;
+            let alasan = document.getElementById('inAlasan').value;
+
+            // Template Laporan Tiket Pesawat
+            let pesanFormat = `✈️ ${teksTebal('BOARDING PASS : PENGAJUAN CUTI')} ✈️\n\n` +
+                              `Halo kak Kayy! 👋\n` +
+                              `Saya ingin mengajukan izin cuti istirahat dengan rincian sebagai berikut:\n\n` +
+                              `👤 ${teksTebal('Penumpang:')} ${nama}\n` +
+                              `💼 ${teksTebal('Kelas Divisi:')} ${divisi}\n` +
+                              `📅 ${teksTebal('Jadwal Cuti:')} ${tgl}\n\n` +
+                              `💬 ${teksTebal('Alasan Penerbangan:')}\n` +
+                              `"${alasan}"\n\n` +
+                              `Mohon *Approve* / *Reject* pengajuan ini ya kak. Terima kasih! ✨`;
+
+            let pesanEncoded = encodeURIComponent(pesanFormat);
+            let linkTelegram = `https://t.me/kayynl?text=${pesanEncoded}`;
+
+            // Efek getar HP (Kalau support)
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            window.open(linkTelegram, '_blank');
+            
+            // Reset form setelah dikirim
+            document.getElementById('cutiForm').reset();
+        });
+    </script>
+</body>
+</html>
