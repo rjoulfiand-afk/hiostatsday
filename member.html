@@ -355,12 +355,14 @@
         });
 
         // ========================================================
-        // 🔄 LOGIKA NAVIGASI & LOGIN
+        // 🔄 LOGIKA NAVIGASI & LOGIN (UPDATE FIREBASE 100%)
         // ========================================================
         window.onload = () => {
-            let sesiLogin = localStorage.getItem('hio_active_session'); // Sesi login tetep nyimpan di lokal HP biar ga login terus
-            if (sesiLogin && authData[sesiLogin]) {
-                currentUser = sesiLogin; currentRole = authData[sesiLogin].role;
+            let sesiLogin = localStorage.getItem('hio_active_session'); 
+            let sesiRole = localStorage.getItem('hio_active_role');
+
+            if (sesiLogin && sesiRole) {
+                currentUser = sesiLogin; currentRole = sesiRole;
                 if(currentRole === "Owner") { loadOwnerDashboard(); } else { loadWorkerDashboard(); }
             } else {
                 showView('view-menu');
@@ -382,6 +384,8 @@
         function logout() { 
             currentUser = ""; currentRole = ""; 
             localStorage.removeItem('hio_active_session');
+            localStorage.removeItem('hio_active_role');
+            localStorage.removeItem('hio_session_user');
             showView('view-menu'); 
         }
 
@@ -395,19 +399,54 @@
             return `${hari}, ${tanggal} | ${hours}:${minutes} WIB`;
         }
 
+        // 🔥 LOGIKA CEK LOGIN LANGSUNG KE CLOUD FIREBASE 🔥
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            let user = document.getElementById('logUser').value.trim().toLowerCase();
-            let pass = document.getElementById('logPass').value.trim().replace(/\s/g, ''); 
+            // PENTING: Dilarang pakai toLowerCase() biar huruf besar/kecil dari bot tetep cocok!
+            let user = document.getElementById('logUser').value.trim(); 
+            let pass = document.getElementById('logPass').value.trim(); 
+            let errorTxt = document.getElementById('login-error');
 
-            if(authData[user] && authData[user].pass === pass) {
-                currentUser = user; currentRole = authData[user].role;
-                localStorage.setItem('hio_active_session', currentUser);
-                
-                if(currentRole === "Owner") { loadOwnerDashboard(); } else { loadWorkerDashboard(); }
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
+            errorTxt.style.color = "var(--text-dark)";
+            errorTxt.innerText = "Mencari data di Server...";
+            errorTxt.style.display = 'block';
+
+            // Tarik data username dari Firebase
+            db.ref('users/' + user).once('value').then((snapshot) => {
+                let userData = snapshot.val();
+                let isValid = false;
+                let userRole = "";
+
+                // 1. Cek Data Bot di Firebase (Prioritas Utama)
+                if (userData && userData.password === pass) {
+                    isValid = true;
+                    userRole = userData.role || "Staff"; // Ambil jabatan dari database
+                } 
+                // 2. Cek Data Lama di authData (Backup buat akun lama)
+                else if (authData[user] && authData[user].pass === pass) {
+                    isValid = true;
+                    userRole = authData[user].role;
+                }
+
+                if (isValid) {
+                    currentUser = user; 
+                    currentRole = userRole;
+                    
+                    // Simpan akses di HP user
+                    localStorage.setItem('hio_active_session', currentUser);
+                    localStorage.setItem('hio_active_role', currentRole);
+                    localStorage.setItem('hio_session_user', currentUser); 
+                    
+                    if(currentRole === "Owner") { loadOwnerDashboard(); } else { loadWorkerDashboard(); }
+                    errorTxt.style.display = 'none';
+                } else {
+                    errorTxt.style.color = "var(--danger)";
+                    errorTxt.innerText = "Akses Ditolak: Username/Password Invalid!";
+                }
+            }).catch(err => {
+                errorTxt.style.color = "var(--danger)";
+                errorTxt.innerText = "Error Koneksi ke Server!";
+            });
         });
 
         // ========================================================
