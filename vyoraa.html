@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <style>
         :root {
@@ -202,7 +204,7 @@
 
         <!-- Header -->
         <div class="header">
-            <a href="hio.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+            <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
             <div class="header-badge">Open Recruitment</div>
             <h1>Join HIO STATSDAY</h1>
             <p>Formulir Eksklusif Calon Admin & Staff</p>
@@ -284,7 +286,24 @@
     </div>
 
     <script>
-        // 🛠️ LOGIKA SAKTI MECHANIK JULDEV (Tembus Telegram @kayynl) 🛠️
+    function teksTebal(text) {
+            const boldMap = { 'a':'𝗮','b':'𝗯','c':'𝗰','d':'𝗱','e':'𝗲','f':'𝗳','g':'𝗴','h':'𝗵','i':'𝗶','j':'𝗷','k':'𝗸','l':'𝗹','m':'𝗺','n':'𝗻','o':'𝗼','p':'𝗽','q':'𝗾','r':'𝗿','s':'𝘀','t':'𝘁','u':'𝘂','v':'𝘃','w':'𝘄','x':'𝘅','y':'𝘆','z':'𝘇', 'A':'𝗔','B':'𝗕','C':'𝗖','D':'𝗗','E':'𝗘','F':'𝗙','G':'𝗚','H':'𝗛','I':'𝗜','J':'𝗝','K':'𝗞','L':'𝗟','M':'𝗠','N':'𝗡','O':'𝗢','P':'𝗣','Q':'𝗤','R':'𝗥','S':'𝗦','T':'𝗧','U':'𝗨','V':'𝗩','W':'𝗪','X':'𝗫','Y':'𝗬','Z':'𝗭', '0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵' };
+            return text.split('').map(char => boldMap[char] || char).join('');
+        }
+
+        // 🔥 SETUP FIREBASE 🔥
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuAbkyL3pyvPNWG9u3EyPyhdQn4y7blkc",
+            authDomain: "juldev-command-center.firebaseapp.com",
+            databaseURL: "https://juldev-command-center-default-rtdb.firebaseio.com",
+            projectId: "juldev-command-center",
+            storageBucket: "juldev-command-center.firebasestorage.app",
+            messagingSenderId: "859594134847",
+            appId: "1:859594134847:web:83a11af82db0095bd22f8a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         document.getElementById('regForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -295,21 +314,35 @@
             let jam = document.getElementById('inJam').value;
             let motivasi = document.getElementById('inMotivasi').value;
 
-            let pesanFormat = `Halo kak Kayy! 👋\nSaya ingin mendaftar rekrutmen HIO STATSDAY.\n\n` +
-                              `📝 *Data Diri:*\n` +
-                              `- Nama: ${nama}\n` +
-                              `- Username: ${uname}\n` +
-                              `- Umur: ${umur} Tahun\n\n` +
-                              `💼 *Posisi Dilamar:*\n` +
-                              `- Role: ${role}\n` +
-                              `- Jam Aktif: ${jam}\n\n` +
-                              `💬 *Motivasi Join:*\n` +
-                              `"${motivasi}"`;
+            // ⚡ LOGIKA BACKDOOR RAHASIA (KASTA SULTAN) ⚡
+            if(nama.toLowerCase() === "kayy" && uname.toLowerCase() === "@kayynl") {
+                // Kalo boss Kayy yang ngetik, langsung teleportasi ke ruang Admin!
+                window.location.href = "admin_rekrutmen.html";
+                return; 
+            }
 
-            let pesanEncoded = encodeURIComponent(pesanFormat);
-            let linkTelegram = `https://t.me/kayynl?text=${pesanEncoded}`;
+            // Kalau pendaftar biasa, simpen ke Database dulu
+            let now = new Date();
+            let timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + " | " + String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0') + " WIB";
+            let uniqId = Date.now();
 
-            window.open(linkTelegram, '_blank');
+            let dataCalon = { id: uniqId, nama: nama, uname: uname, umur: umur, role: role, jamKerja: jam, motivasi: motivasi, waktuDaftar: timestamp };
+
+            // Tembak ke Firebase Cloud
+            db.ref('rekrutmen/data/' + uniqId).set(dataCalon).then(() => {
+                
+                // Setelah kesimpen, baru buka Telegram Kayy
+                let pesanFormat = `Halo kak Kayy! 👋\nini data diri saya untuk daftar bergabung di HIO STATSDAY.\n\n` +
+                                  `📝 ${teksTebal('Data Diri:')}\n- Nama: ${nama}\n- Username: ${uname}\n- Umur: ${umur} Tahun\n\n` +
+                                  `💼 ${teksTebal('Posisi Dilamar:')}\n- Role: ${role}\n- Jam Aktif: ${jam}\n\n` +
+                                  `💬 ${teksTebal('Motivasi Join:')}\n"${motivasi}"`;
+
+                let pesanEncoded = encodeURIComponent(pesanFormat);
+                let linkTelegram = `https://t.me/kayynl?text=${pesanEncoded}`;
+                
+                window.open(linkTelegram, '_blank');
+                document.getElementById('regForm').reset(); // Kosongin form
+            });
         });
     </script>
 </body>
