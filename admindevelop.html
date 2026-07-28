@@ -423,75 +423,96 @@
             return text.split('').map(char => boldMap[char] || char).join('');
         }
 
-        // 🔥 LOGIKA KASTA DEWA (CHECKPOINT & NUKLIR OWNER) 🔥
+        // 🔥 LOGIKA KASTA DEWA (ACC & REPORT VIA FIREBASE) 🔥
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            let user = document.getElementById('authObjUser').value.trim().toLowerCase();
-            let pass = document.getElementById('authObjPass').value.trim().replace(/\s/g, ''); 
+            // PENTING: Jangan di-toLowerCase() boss!
+            let user = document.getElementById('authObjUser').value.trim();
+            let pass = document.getElementById('authObjPass').value.trim(); 
             let errorMsg = document.getElementById('authError');
 
-            if(authData[user] && authData[user].pass === pass) {
-                let roleLogin = authData[user].role;
+            errorMsg.style.color = "#0ea5e9";
+            errorMsg.innerText = "Otentikasi Server...";
+            errorMsg.style.display = 'block';
 
-                if(aksiTertunda === 'ACC') {
-                    
-                    if(roleLogin === "Owner") {
-                        // KALO OWNER (jull) -> HAPUS TUGAS PERMANEN DARI PAPAN
-                        let dataUpdate = {...globalTasksData};
-                        dataUpdate[divisiTertunda] = dataUpdate[divisiTertunda].filter(t => t.id !== idTertunda);
-                        db.ref('tasks/data').set(dataUpdate); 
-                        tutupSemuaModal();
+            // CEK DATABASE FIREBASE LUR!
+            db.ref('users/' + user).once('value').then((snapshot) => {
+                let userData = snapshot.val();
+                let roleLogin = "";
+                let isValid = false;
 
-                    } else if (roleLogin === divisiTertunda || roleLogin === "Manager") {
-                        // KALO STAF YANG ACC -> NAMBAHIN BADGE NAMA DIA AJA
-                        let dataUpdate = {...globalTasksData};
-                        let taskIndex = dataUpdate[divisiTertunda].findIndex(t => t.id === idTertunda);
+                if (userData && userData.password === pass) {
+                    isValid = true;
+                    roleLogin = userData.role || "Staff";
+                } else if (authData[user] && authData[user].pass === pass) {
+                    isValid = true;
+                    roleLogin = authData[user].role;
+                }
+
+                if(isValid) {
+                    // LOGIKA KALAU PASSWORD BENER
+                    if(aksiTertunda === 'ACC') {
                         
-                        if(taskIndex !== -1) {
-                            let taskTarget = dataUpdate[divisiTertunda][taskIndex];
-                            
-                            if(!taskTarget.selesaiOleh) taskTarget.selesaiOleh = {}; // Bikin object kalo blom ada
-                            
-                            // Cek apakah dia udah pernah ACC?
-                            if(taskTarget.selesaiOleh[user]) {
-                                errorMsg.innerText = "Kamu sudah menyetorkan misi ini boss!";
-                                errorMsg.style.display = 'block';
-                                return;
-                            }
+                        if(roleLogin === "Owner") {
+                            // KALO OWNER -> HAPUS TUGAS PERMANEN DARI PAPAN
+                            let dataUpdate = {...globalTasksData};
+                            dataUpdate[divisiTertunda] = dataUpdate[divisiTertunda].filter(t => t.id !== idTertunda);
+                            db.ref('tasks/data').set(dataUpdate); 
+                            tutupSemuaModal();
 
-                            // Kasi stempel nama & jam dia selesai
-                            let now = new Date();
-                            taskTarget.selesaiOleh[user] = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+                        } else if (roleLogin === divisiTertunda || roleLogin === "Manager") {
+                            // KALO STAF YG SESUAI -> KASIH STEMPEL NAMA AJA
+                            let dataUpdate = {...globalTasksData};
+                            let taskIndex = dataUpdate[divisiTertunda].findIndex(t => t.id === idTertunda);
                             
-                            // Tembak balik ke Firebase
-                            db.ref('tasks/data').set(dataUpdate).then(() => {
-                                tutupSemuaModal();
+                            if(taskIndex !== -1) {
+                                let taskTarget = dataUpdate[divisiTertunda][taskIndex];
                                 
-                                // AUTO LAPOR TELEGRAM SETELAH ACC (Praktis!)
-                                let jamLapor = taskTarget.selesaiOleh[user];
-                                let pesanFormat = `⚜️ ${teksTebal('MISSION ACCOMPLISHED')} ⚜️\n\nHaloo kak Kayy! 👋\nSaya sudah menyelesaikan misi: *${taskTarget.judul || "Tugas Divisi"}* sesuai dengan S.O.P.\n\n👤 ${teksTebal('Pelapor:')} ${user}\n💼 ${teksTebal('Divisi:')} ${roleLogin}\n⏱️ ${teksTebal('Waktu Selesai:')} ${jamLapor} WIB\n\n_Sistem terverifikasi oleh HIO STATSDAY Web._`;
-                                window.open(`https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`, '_blank');
-                            });
+                                if(!taskTarget.selesaiOleh) taskTarget.selesaiOleh = {}; 
+                                
+                                // Cek apakah dia udah pernah ACC?
+                                if(taskTarget.selesaiOleh[user]) {
+                                    errorMsg.style.color = "#ef4444";
+                                    errorMsg.innerText = "Aman boss, tugas ini sudah Anda ACC sebelumnya!";
+                                    return;
+                                }
+
+                                // Kasi stempel nama & jam dia selesai
+                                let now = new Date();
+                                taskTarget.selesaiOleh[user] = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+                                
+                                // Tembak balik ke Firebase
+                                db.ref('tasks/data').set(dataUpdate).then(() => {
+                                    tutupSemuaModal();
+                                    
+                                    // AUTO LAPOR TELEGRAM
+                                    let jamLapor = taskTarget.selesaiOleh[user];
+                                    let pesanFormat = `⚜️ ${teksTebal('MISSION ACCOMPLISHED')} ⚜️\n\nHaloo kak Kayy! 👋\nSaya sudah menyelesaikan misi: *${taskTarget.judul || "Tugas Divisi"}* sesuai dengan S.O.P.\n\n👤 ${teksTebal('Pelapor:')} ${user}\n💼 ${teksTebal('Divisi:')} ${roleLogin}\n⏱️ ${teksTebal('Waktu Selesai:')} ${jamLapor} WIB\n\n_Sistem terverifikasi oleh HIO STATSDAY Web._`;
+                                    window.open(`https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`, '_blank');
+                                });
+                            }
+                        } else {
+                            // Kalau nyoba ACC tugas divisi orang lain
+                            errorMsg.style.color = "#ef4444";
+                            errorMsg.innerText = `Akses Ditolak! Akun ${roleLogin} tidak berhak atas misi divisi ${divisiTertunda}.`;
                         }
 
-                    } else {
-                        // Kalau divisi lain nyoba ACC tugas divisi orang
-                        errorMsg.innerText = `Akses Ditolak! Akun ${roleLogin} tidak berhak atas misi divisi ${divisiTertunda}.`;
-                        errorMsg.style.display = 'block';
+                    } else if(aksiTertunda === 'REPORT') {
+                        // Tombol lapor manual di pojok bawah
+                        tutupSemuaModal();
+                        let now = new Date();
+                        let jamLapor = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+                        let pesanFormat = `⚜️ ${teksTebal('EXECUTIVE REPORT')} ⚜️\n\nHaloo kak Kayy! 👋\nTugas dari ${teksTebal('Papan Command')} untuk divisi ${teksTebal(roleLogin)} sudah saya selesaikan semua dengan aman dan terkendali. Terima kasihh! ✨\n\n👤 ${teksTebal('Pelapor:')} ${user}\n💼 ${teksTebal('Divisi:')} ${roleLogin}\n⏱️ ${teksTebal('Waktu Lapor:')} ${jamLapor} WIB\n\n_Sistem terverifikasi oleh HIO STATSDAY Web._`;
+                        window.open(`https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`, '_blank');
                     }
-
-                } else if(aksiTertunda === 'REPORT') {
-                    // Tombol lapor manual di pojok bawah
-                    tutupSemuaModal();
-                    let now = new Date();
-                    let jamLapor = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-                    let pesanFormat = `⚜️ ${teksTebal('EXECUTIVE REPORT')} ⚜️\n\nHaloo kak Kayy! 👋\nTugas dari ${teksTebal('Papan Command')} untuk divisi ${teksTebal(roleLogin)} sudah saya selesaikan semua dengan aman dan terkendali. Terima kasihh! ✨\n\n👤 ${teksTebal('Pelapor:')} ${user}\n💼 ${teksTebal('Divisi:')} ${roleLogin}\n⏱️ ${teksTebal('Waktu Lapor:')} ${jamLapor} WIB\n\n_Sistem terverifikasi oleh HIO STATSDAY Web._`;
-                    window.open(`https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`, '_blank');
+                } else {
+                    errorMsg.style.color = "#ef4444";
+                    errorMsg.innerText = "Username atau Password salah boss!";
                 }
-            } else {
-                errorMsg.innerText = "Username atau Password salah boss!";
-                errorMsg.style.display = 'block';
-            }
+            }).catch(err => {
+                errorMsg.style.color = "#ef4444";
+                errorMsg.innerText = "Gagal terhubung ke Database!";
+            });
         });
     </script>
 </body>
