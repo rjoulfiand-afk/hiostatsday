@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HR Executive - HIO STATSDAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        :root {
+            --text-dark: #0f172a; --text-soft: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.45); --glass-border: rgba(255, 255, 255, 0.7);
+            --accent-1: #a1c4fd; --accent-2: #c2e9fb; --accent-vip: #ff9a9e;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent;}
+        body { color: var(--text-dark); min-height: 100vh; background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc); background-size: 400% 400%; animation: gradientBG 15s ease infinite; padding: 30px 20px; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+        .blob { position: fixed; filter: blur(80px); z-index: -1; opacity: 0.6; border-radius: 50%; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #e0c3fc; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #8ec5fc; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        .container { width: 100%; max-width: 1000px; margin: 0 auto; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 40px 30px; box-shadow: 0 30px 60px rgba(162, 171, 189, 0.25), inset 0 0 0 1px rgba(255,255,255,0.8); animation: smoothFadeUp 0.8s ease-out forwards; position: relative;}
+        @keyframes smoothFadeUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .header { text-align: center; margin-bottom: 40px; position: relative; }
+        .header h1 { font-family: 'Cinzel Decorative', serif; font-size: 32px; font-weight: 900; color: var(--text-dark); margin-bottom: 5px;}
+        .header p { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 2px; }
+        
+        .btn-action { position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: #fff; width: 45px; height: 45px; border-radius: 14px; display: flex; justify-content: center; align-items: center; color: var(--text-dark); font-size: 18px; text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,0.06); transition: var(--transition); }
+        .btn-action:hover { background: var(--text-dark); color: #fff; transform: translateY(-50%) scale(1.08);}
+
+        /* Area List Data */
+        .list-area { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-height: 600px; overflow-y: auto; padding-right: 10px; }
+        
+        .user-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); transition: var(--transition); position: relative; overflow: hidden;}
+        .user-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(161, 196, 253, 0.4); }
+        .user-card::before { content: ''; position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: linear-gradient(to bottom, var(--accent-1), var(--accent-vip)); }
+
+        .c-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .c-name { font-size: 16px; font-weight: 800; color: var(--text-dark); }
+        .c-role { background: linear-gradient(135deg, #1e293b, #475569); color: #fff; font-size: 10px; font-weight: 800; padding: 5px 12px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase;}
+        
+        .c-detail { font-size: 13px; color: var(--text-soft); font-weight: 600; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
+        .c-detail i { color: var(--accent-1); width: 15px; text-align: center;}
+        
+        .c-time { margin-top: 15px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 11px; font-weight: 700; color: #94a3b8; display: flex; align-items: center; gap: 6px;}
+        .btn-delete { margin-left: auto; background: #fee2e2; color: #ef4444; border: none; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; transition: var(--transition); }
+        .btn-delete:hover { background: #ef4444; color: #fff; }
+
+        /* FAB Tambah Member Manual */
+        .fab-add { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #fff; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; box-shadow: 0 15px 35px rgba(255, 154, 158, 0.5); transition: var(--transition); z-index: 100;}
+        .fab-add:hover { transform: translateY(-5px) scale(1.1) rotate(90deg); box-shadow: 0 20px 45px rgba(255, 154, 158, 0.6); }
+
+        /* Modal Tambah Manual */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-box { background: rgba(255, 255, 255, 0.95); padding: 40px 35px; border-radius: 35px; width: 100%; max-width: 450px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); transform: translateY(30px); transition: transform 0.3s ease; position: relative;}
+        .modal-overlay.show .modal-box { transform: translateY(0); }
+        .btn-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 20px; color: var(--text-soft); cursor: pointer; }
+
+        .input-group { margin-bottom: 15px; position: relative;}
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--accent-1); }
+        .form-control { width: 100%; padding: 14px 15px 14px 45px; border-radius: 15px; border: 2px solid #e2e8f0; background: #f8fafc; font-family: 'Plus Jakarta Sans'; font-weight: 600; font-size: 13px; outline: none; transition: var(--transition);}
+        .form-control:focus { border-color: var(--accent-1); background: #fff; box-shadow: 0 0 0 4px rgba(161, 196, 253, 0.2);}
+        select.form-control { appearance: none; cursor: pointer;}
+        
+        .btn-submit { width: 100%; padding: 15px; border-radius: 15px; border: none; margin-top: 10px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #1e293b; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 20px rgba(161, 196, 253, 0.4); transition: var(--transition);}
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(161, 196, 253, 0.6);}
+
+        @media screen and (max-width: 600px) { .container { padding: 30px 20px; border-radius: 35px; } .header h1 { font-size: 26px; } .btn-action { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 20px; } .list-area { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div><div class="blob blob-2"></div>
+    
+    <div class="container">
+        <div class="header">
+            <a href="hio.html" class="btn-action"><i class="fas fa-arrow-left"></i></a>
+            <h1>HR Dashboard</h1>
+            <p>Database Pendaftaran HIO</p>
+        </div>
+
+        <div class="list-area" id="dataList">
+            <!-- Data Masuk Kesini -->
+            <div style="text-align:center; width: 100%; padding: 40px; color: #94a3b8; font-weight: 600;">
+                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Sinkronisasi Database...
+            </div>
+        </div>
+    </div>
+
+    <!-- Tombol Tambah Manual -->
+    <button class="fab-add" onclick="bukaModal()"><i class="fas fa-plus"></i></button>
+
+    <!-- Modal Tambah Data -->
+    <div id="modalAdd" class="modal-overlay">
+        <div class="modal-box">
+            <button class="btn-close" onclick="tutupModal()"><i class="fas fa-times"></i></button>
+            <h2 style="font-family: 'Cinzel Decorative'; font-weight:800; margin-bottom:5px;">Add Member</h2>
+            <p style="font-size:12px; color:var(--text-soft); margin-bottom:25px; font-weight:600;">Tambahkan data secara manual.</p>
+            
+            <form id="formManual">
+                <div class="input-group">
+                    <input type="text" id="mNama" class="form-control" placeholder="Nama Panggilan" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="mUname" class="form-control" placeholder="@username_tele" required>
+                    <i class="fab fa-telegram-plane"></i>
+                </div>
+                <div class="input-group">
+                    <select id="mRole" class="form-control" required>
+                        <option value="" disabled selected>Pilih Role...</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Admin System">Admin System</option>
+                        <option value="Staff Divisi">Staff Divisi</option>
+                        <option value="Divisi ELV">Divisi ELV</option>
+                    </select>
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Simpan Data</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 🔥 SETUP FIREBASE 🔥
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuAbkyL3pyvPNWG9u3EyPyhdQn4y7blkc",
+            authDomain: "juldev-command-center.firebaseapp.com",
+            databaseURL: "https://juldev-command-center-default-rtdb.firebaseio.com",
+            projectId: "juldev-command-center",
+            storageBucket: "juldev-command-center.firebasestorage.app",
+            messagingSenderId: "859594134847",
+            appId: "1:859594134847:web:83a11af82db0095bd22f8a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 📡 TARIK DATA REAL-TIME
+        db.ref('rekrutmen/data').on('value', (snapshot) => {
+            let dataArea = document.getElementById('dataList');
+            dataArea.innerHTML = "";
+            let data = snapshot.val();
+
+            if(!data) {
+                dataArea.innerHTML = `<div style="text-align:center; width:100%; padding:40px; color:#94a3b8; font-weight:600;"><i class="fas fa-folder-open fa-3x mb-2" style="opacity:0.5;"></i><br>Database masih kosong boss.</div>`;
+                return;
+            }
+
+            // Loop data & bikin elemen kartunya
+            Object.values(data).reverse().forEach(item => {
+                dataArea.innerHTML += `
+                    <div class="user-card">
+                        <div class="c-header">
+                            <div class="c-name">${item.nama}</div>
+                            <div class="c-role">${item.role}</div>
+                        </div>
+                        <div class="c-detail"><i class="fab fa-telegram-plane"></i> ${item.uname}</div>
+                        ${item.umur ? `<div class="c-detail"><i class="fas fa-calendar-alt"></i> Usia ${item.umur} Tahun</div>` : ''}
+                        ${item.jamKerja ? `<div class="c-detail"><i class="fas fa-clock"></i> ${item.jamKerja}</div>` : ''}
+                        
+                        <div class="c-time">
+                            <i class="fas fa-history"></i> Join: ${item.waktuDaftar}
+                            <button class="btn-delete" onclick="hapusData('${item.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // 🗑️ FUNGSI HAPUS DATA
+        function hapusData(id) {
+            if(confirm("Yakin mau hapus data ini dari database?")) {
+                db.ref('rekrutmen/data/' + id).remove();
+            }
+        }
+
+        // ➕ FUNGSI TAMBAH MANUAL
+        function bukaModal() { document.getElementById('modalAdd').classList.add('show'); }
+        function tutupModal() { document.getElementById('modalAdd').classList.remove('show'); document.getElementById('formManual').reset(); }
+
+        document.getElementById('formManual').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let nama = document.getElementById('mNama').value;
+            let uname = document.getElementById('mUname').value;
+            let role = document.getElementById('mRole').value;
+            
+            let now = new Date();
+            let timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + " | " + String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0') + " WIB (Added Manually)";
+            let uniqId = Date.now();
+
+            let dataManual = { id: uniqId, nama: nama, uname: uname, role: role, waktuDaftar: timestamp };
+
+            db.ref('rekrutmen/data/' + uniqId).set(dataManual).then(() => {
+                tutupModal();
+            });
+        });
+    </script>
+</body>
+</html>
