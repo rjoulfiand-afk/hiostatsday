@@ -488,7 +488,7 @@
                                     // AUTO LAPOR TELEGRAM
                                     let jamLapor = taskTarget.selesaiOleh[user];
                                     let pesanFormat = `⚜️ ${teksTebal('MISSION ACCOMPLISHED')} ⚜️\n\nHaloo kak Kayy! 👋\nSaya sudah menyelesaikan misi: *${taskTarget.judul || "Tugas Divisi"}* sesuai dengan S.O.P.\n\n👤 ${teksTebal('Pelapor:')} ${user}\n💼 ${teksTebal('Divisi:')} ${roleLogin}\n⏱️ ${teksTebal('Waktu Selesai:')} ${jamLapor} WIB\n\n_Sistem terverifikasi oleh HIO STATSDAY Web._`;
-                                    window.open(`https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`, '_blank');
+                                    window.location.href = `https://t.me/kayynl?text=${encodeURIComponent(pesanFormat)}`;
                                 });
                             }
                         } else {
